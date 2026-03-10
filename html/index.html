@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plinko</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Matter.js 物理エンジン (CDN) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.19.0/matter.min.js"></script>
+</head>
+<body>
+    <div id="app" class="hidden">
+
+        <!-- 背景オーバーレイ -->
+        <div id="overlay" class="overlay"></div>
+
+        <!-- メインパネル -->
+        <div id="panel" class="panel">
+
+            <!-- ヘッダー -->
+            <div class="panel-header">
+                <div class="header-brand">
+                    <div class="brand-icon">◆</div>
+                    <span class="brand-name">PLINKO</span>
+                    <span class="brand-badge">CASINO</span>
+                </div>
+                <button id="closeBtn" class="close-btn" aria-label="閉じる">✕</button>
+            </div>
+
+            <!-- コンテンツエリア -->
+            <div class="content-area">
+
+                <!-- 左サイドバー: コントロールパネル -->
+                <div class="sidebar">
+
+                    <!-- ベット金額 -->
+                    <div class="control-group">
+                        <label class="control-label">BET AMOUNT</label>
+                        <div class="bet-input-wrapper">
+                            <span class="currency-symbol">$</span>
+                            <input
+                                type="number"
+                                id="betAmount"
+                                class="bet-input"
+                                placeholder="0"
+                                min="10"
+                                step="10"
+                            />
+                        </div>
+                        <div class="bet-quick-buttons">
+                            <button class="quick-btn" data-multiplier="0.5">½</button>
+                            <button class="quick-btn" data-multiplier="2">2×</button>
+                            <button class="quick-btn" data-amount="100">$100</button>
+                            <button class="quick-btn" data-amount="1000">$1K</button>
+                        </div>
+                    </div>
+
+                    <!-- リスク選択 -->
+                    <div class="control-group">
+                        <label class="control-label">RISK</label>
+                        <div class="risk-selector">
+                            <button class="risk-btn active" data-risk="low">LOW</button>
+                            <button class="risk-btn" data-risk="medium">MEDIUM</button>
+                            <button class="risk-btn" data-risk="high">HIGH</button>
+                        </div>
+                    </div>
+
+                    <!-- 列数選択 -->
+                    <div class="control-group">
+                        <label class="control-label">ROWS <span id="rowsValue">16</span></label>
+                        <input
+                            type="range"
+                            id="rowsSlider"
+                            class="rows-slider"
+                            min="8"
+                            max="16"
+                            value="16"
+                            step="1"
+                        />
+                        <div class="rows-minmax">
+                            <span>8</span>
+                            <span>16</span>
+                        </div>
+                    </div>
+
+                    <!-- ベットボタン -->
+                    <button id="betBtn" class="bet-btn">
+                        <span class="bet-btn-icon">▶</span>
+                        <span class="bet-btn-text">BET</span>
+                    </button>
+
+                    <!-- 最終結果表示 -->
+                    <div id="resultPanel" class="result-panel hidden">
+                        <div class="result-label">RESULT</div>
+                        <div id="resultMultiplier" class="result-multiplier"></div>
+                        <div id="resultAmount" class="result-amount"></div>
+                    </div>
+
+                    <!-- エラー表示 -->
+                    <div id="errorPanel" class="error-panel hidden">
+                        <span id="errorMsg"></span>
+                    </div>
+                </div>
+
+                <!-- メインエリア: Plinkoキャンバス -->
+                <div class="game-area">
+                    <canvas id="plinkoCanvas"></canvas>
+
+                    <!-- ポケット倍率ラベル（JSで動的生成） -->
+                    <div id="pocketLabels" class="pocket-labels"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

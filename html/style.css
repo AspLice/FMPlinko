@@ -1,0 +1,500 @@
+/* ============================================================
+   Plinko — スタイルシート
+   Stake風ダークテーマ + グラスモーフィズム + プレミアムデザイン
+   ============================================================ */
+
+/* ---- Google Fonts ---- */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+/* ---- CSS変数（デザイントークン） ---- */
+:root {
+    --bg-base:         #0f1923;
+    --bg-panel:        #1a2535;
+    --bg-panel-light:  #1e2d3d;
+    --bg-card:         #243447;
+    --bg-card-hover:   #2d3f55;
+
+    --accent-green:    #00e701;
+    --accent-green-dim:#00c701aa;
+    --accent-gold:     #f5a623;
+    --accent-red:      #ff4757;
+    --accent-blue:     #4fc3f7;
+
+    --text-primary:    #e8f4fd;
+    --text-secondary:  #8ba6c1;
+    --text-muted:      #4a6280;
+
+    --border-subtle:   rgba(255,255,255,0.06);
+    --border-glow:     rgba(0,231,1,0.3);
+
+    --radius-sm:  6px;
+    --radius-md:  12px;
+    --radius-lg:  18px;
+    --radius-xl:  24px;
+
+    --transition-fast:   0.15s ease;
+    --transition-normal: 0.25s ease;
+    --transition-slow:   0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+
+    --shadow-panel: 0 24px 80px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,255,255,0.04);
+    --glow-green:   0 0 20px rgba(0,231,1,0.4), 0 0 60px rgba(0,231,1,0.15);
+    --glow-gold:    0 0 20px rgba(245,166,35,0.5);
+}
+
+/* ---- リセット ---- */
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html, body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    font-family: 'Inter', sans-serif;
+    background: transparent;
+    color: var(--text-primary);
+}
+
+/* ---- 表示状態管理 ---- */
+.hidden { display: none !important; }
+
+/* ---- オーバーレイ ---- */
+.overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(5, 10, 18, 0.75);
+    backdrop-filter: blur(4px);
+    z-index: 100;
+    animation: fadeIn 0.3s ease;
+}
+
+/* ---- アプリコンテナ ---- */
+#app {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 200;
+}
+
+/* ---- パネル ---- */
+.panel {
+    position: relative;
+    z-index: 201;
+    width: 940px;
+    max-width: 96vw;
+    max-height: 92vh;
+    background: var(--bg-panel);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-panel);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    animation: slideUp 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+/* ---- ヘッダー ---- */
+.panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 20px;
+    background: rgba(0,0,0,0.25);
+    border-bottom: 1px solid var(--border-subtle);
+    flex-shrink: 0;
+}
+
+.header-brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.brand-icon {
+    font-size: 18px;
+    color: var(--accent-green);
+    filter: drop-shadow(0 0 6px var(--accent-green));
+    animation: pulse 2s ease-in-out infinite;
+}
+
+.brand-name {
+    font-size: 20px;
+    font-weight: 800;
+    letter-spacing: 0.15em;
+    background: linear-gradient(135deg, #fff 0%, var(--accent-green) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.brand-badge {
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    color: var(--text-muted);
+    background: var(--bg-card);
+    padding: 2px 8px;
+    border-radius: 20px;
+    border: 1px solid var(--border-subtle);
+}
+
+.close-btn {
+    width: 30px;
+    height: 30px;
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-sm);
+    background: transparent;
+    color: var(--text-muted);
+    font-size: 12px;
+    cursor: pointer;
+    transition: var(--transition-fast);
+    display: flex; align-items: center; justify-content: center;
+}
+.close-btn:hover {
+    background: rgba(255,71,87,0.15);
+    border-color: var(--accent-red);
+    color: var(--accent-red);
+}
+
+/* ---- コンテンツエリア ---- */
+.content-area {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+    min-height: 0;
+}
+
+/* ---- サイドバー ---- */
+.sidebar {
+    width: 220px;
+    flex-shrink: 0;
+    background: rgba(0,0,0,0.2);
+    border-right: 1px solid var(--border-subtle);
+    padding: 18px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    overflow-y: auto;
+}
+
+/* ---- コントロールグループ ---- */
+.control-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.control-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    color: var(--text-muted);
+    text-transform: uppercase;
+}
+
+/* ---- ベット入力 ---- */
+.bet-input-wrapper {
+    display: flex;
+    align-items: center;
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    transition: var(--transition-fast);
+}
+.bet-input-wrapper:focus-within {
+    border-color: var(--accent-green);
+    box-shadow: 0 0 0 2px var(--border-glow);
+}
+
+.currency-symbol {
+    padding: 0 10px;
+    color: var(--accent-green);
+    font-weight: 700;
+    font-size: 15px;
+}
+
+.bet-input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: var(--text-primary);
+    font-family: 'Inter', sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    padding: 10px 10px 10px 0;
+}
+.bet-input::placeholder { color: var(--text-muted); }
+.bet-input::-webkit-outer-spin-button,
+.bet-input::-webkit-inner-spin-button { -webkit-appearance: none; }
+
+/* ---- クイックボタン ---- */
+.bet-quick-buttons {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 5px;
+}
+
+.quick-btn {
+    padding: 6px 4px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-sm);
+    color: var(--text-secondary);
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition-fast);
+}
+.quick-btn:hover {
+    background: var(--bg-card-hover);
+    color: var(--text-primary);
+    border-color: rgba(255,255,255,0.12);
+}
+
+/* ---- リスク選択 ---- */
+.risk-selector {
+    display: flex;
+    background: var(--bg-card);
+    border-radius: var(--radius-md);
+    padding: 3px;
+    gap: 2px;
+}
+
+.risk-btn {
+    flex: 1;
+    padding: 7px 4px;
+    background: transparent;
+    border: none;
+    border-radius: var(--radius-sm);
+    color: var(--text-muted);
+    font-family: 'Inter', sans-serif;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    cursor: pointer;
+    transition: var(--transition-fast);
+}
+.risk-btn:hover { color: var(--text-secondary); }
+.risk-btn.active {
+    background: var(--accent-green);
+    color: #000;
+    box-shadow: 0 2px 8px rgba(0,231,1,0.35);
+}
+
+/* ---- 列数スライダー ---- */
+.rows-slider {
+    -webkit-appearance: none;
+    width: 100%;
+    height: 4px;
+    border-radius: 2px;
+    background: var(--bg-card);
+    outline: none;
+    cursor: pointer;
+}
+.rows-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--accent-green);
+    box-shadow: var(--glow-green);
+    cursor: pointer;
+    transition: var(--transition-fast);
+}
+.rows-slider::-webkit-slider-thumb:hover {
+    transform: scale(1.2);
+}
+
+.rows-minmax {
+    display: flex;
+    justify-content: space-between;
+    font-size: 10px;
+    color: var(--text-muted);
+    font-weight: 600;
+}
+
+/* ---- ベットボタン ---- */
+.bet-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    padding: 14px;
+    background: linear-gradient(135deg, #00e701 0%, #00b800 100%);
+    border: none;
+    border-radius: var(--radius-md);
+    color: #000;
+    font-family: 'Inter', sans-serif;
+    font-size: 15px;
+    font-weight: 800;
+    letter-spacing: 0.05em;
+    cursor: pointer;
+    transition: var(--transition-normal);
+    box-shadow: 0 4px 20px rgba(0,231,1,0.4);
+    position: relative;
+    overflow: hidden;
+}
+.bet-btn::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(255,255,255,0.2) 0%, transparent 100%);
+    opacity: 0;
+    transition: var(--transition-fast);
+}
+.bet-btn:hover::before { opacity: 1; }
+.bet-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 8px 30px rgba(0,231,1,0.5);
+}
+.bet-btn:active { transform: translateY(0); }
+.bet-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+.bet-btn-icon {
+    font-size: 12px;
+    transition: transform 0.3s;
+}
+.bet-btn:not(:disabled):hover .bet-btn-icon {
+    transform: translateX(3px);
+}
+
+/* ---- 結果パネル ---- */
+.result-panel {
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-md);
+    padding: 14px;
+    text-align: center;
+    animation: fadeIn 0.3s ease;
+}
+
+.result-label {
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    color: var(--text-muted);
+    margin-bottom: 6px;
+}
+
+.result-multiplier {
+    font-size: 26px;
+    font-weight: 900;
+    letter-spacing: 0.02em;
+    background: linear-gradient(135deg, var(--accent-gold) 0%, #ffcc44 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    filter: drop-shadow(0 0 8px rgba(245,166,35,0.5));
+}
+
+.result-amount {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    margin-top: 2px;
+}
+
+/* ---- エラーパネル ---- */
+.error-panel {
+    background: rgba(255,71,87,0.1);
+    border: 1px solid rgba(255,71,87,0.3);
+    border-radius: var(--radius-md);
+    padding: 10px 12px;
+    font-size: 12px;
+    color: var(--accent-red);
+    font-weight: 500;
+    text-align: center;
+    animation: fadeIn 0.3s ease;
+}
+
+/* ---- ゲームエリア ---- */
+.game-area {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 16px 12px 8px;
+    position: relative;
+    overflow: hidden;
+    background: radial-gradient(ellipse at 50% 0%, rgba(0,231,1,0.04) 0%, transparent 60%);
+}
+
+#plinkoCanvas {
+    border-radius: var(--radius-md);
+    display: block;
+}
+
+/* ---- ポケットラベル ---- */
+.pocket-labels {
+    display: flex;
+    justify-content: space-around;
+    width: 100%;
+    margin-top: 4px;
+    padding: 0 4px;
+}
+
+.pocket-label {
+    flex: 1;
+    text-align: center;
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    padding: 4px 1px;
+    border-radius: 4px;
+    transition: var(--transition-normal);
+}
+
+.pocket-label.hit {
+    transform: scale(1.15);
+    box-shadow: var(--glow-gold);
+    animation: pocketHit 0.6s ease;
+}
+
+/* 倍率別カラーリング */
+.pocket-label.tier-jackpot  { color: #ff6b35; background: rgba(255,107,53,0.15); }
+.pocket-label.tier-high     { color: var(--accent-gold); background: rgba(245,166,35,0.12); }
+.pocket-label.tier-medium   { color: #4fc3f7; background: rgba(79,195,247,0.10); }
+.pocket-label.tier-low      { color: var(--text-secondary); background: rgba(139,166,193,0.08); }
+.pocket-label.tier-loss     { color: var(--accent-red); background: rgba(255,71,87,0.10); }
+
+/* ---- アニメーション ---- */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+@keyframes slideUp {
+    from { opacity: 0; transform: translateY(30px) scale(0.97); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50%       { opacity: 0.5; }
+}
+
+@keyframes pocketHit {
+    0%   { transform: scale(1);    }
+    30%  { transform: scale(1.35); }
+    60%  { transform: scale(1.1);  }
+    100% { transform: scale(1.15); }
+}
+
+/* ---- スクロールバー ---- */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border-subtle); border-radius: 2px; }
