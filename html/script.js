@@ -10,18 +10,18 @@
 // ============================================================
 
 const COLORS = {
-    peg:        '#2d4a6e',
-    pegStroke:  '#4a7aab',
-    ball:       '#ffffff',
-    ballGlow:   'rgba(255,255,255,0.8)',
-    bgCanvas:   '#111e2d',
+    peg: '#2d4a6e',
+    pegStroke: '#4a7aab',
+    ball: '#ffffff',
+    ballGlow: 'rgba(255,255,255,0.8)',
+    bgCanvas: '#111e2d',
 
     // ポケット倍率ティア別カラー
     tierJackpot: '#ff6b35',  // ≥ 50x
-    tierHigh:    '#f5a623',  // ≥ 10x
-    tierMedium:  '#4fc3f7',  // ≥ 2x
-    tierLow:     '#8ba6c1',  // ≥ 1x
-    tierLoss:    '#ff4757',  // < 1x
+    tierHigh: '#f5a623',  // ≥ 10x
+    tierMedium: '#4fc3f7',  // ≥ 2x
+    tierLow: '#8ba6c1',  // ≥ 1x
+    tierLoss: '#ff4757',  // < 1x
 };
 
 // ============================================================
@@ -31,8 +31,8 @@ const COLORS = {
 
 const ODDS_TABLE = {
     low: {
-        8:  [5.6, 2.1, 1.1, 1.0, 0.5, 1.0, 1.1, 2.1, 5.6],
-        9:  [5.6, 2.0, 1.6, 1.0, 0.7, 0.7, 1.0, 1.6, 2.0, 5.6],
+        8: [5.6, 2.1, 1.1, 1.0, 0.5, 1.0, 1.1, 2.1, 5.6],
+        9: [5.6, 2.0, 1.6, 1.0, 0.7, 0.7, 1.0, 1.6, 2.0, 5.6],
         10: [8.9, 3.0, 1.4, 1.1, 1.0, 0.5, 1.0, 1.1, 1.4, 3.0, 8.9],
         11: [8.4, 3.0, 1.9, 1.3, 1.0, 0.7, 0.7, 1.0, 1.3, 1.9, 3.0, 8.4],
         12: [10.0, 3.0, 1.6, 1.4, 1.1, 1.0, 0.5, 1.0, 1.1, 1.4, 1.6, 3.0, 10.0],
@@ -42,8 +42,8 @@ const ODDS_TABLE = {
         16: [16.0, 9.0, 2.0, 1.4, 1.4, 1.2, 1.1, 1.0, 0.5, 1.0, 1.1, 1.2, 1.4, 1.4, 2.0, 9.0, 16.0],
     },
     medium: {
-        8:  [13.0, 3.0, 1.3, 0.7, 0.4, 0.7, 1.3, 3.0, 13.0],
-        9:  [18.0, 4.0, 1.7, 0.9, 0.5, 0.5, 0.9, 1.7, 4.0, 18.0],
+        8: [13.0, 3.0, 1.3, 0.7, 0.4, 0.7, 1.3, 3.0, 13.0],
+        9: [18.0, 4.0, 1.7, 0.9, 0.5, 0.5, 0.9, 1.7, 4.0, 18.0],
         10: [22.0, 5.0, 2.0, 1.4, 0.6, 0.4, 0.6, 1.4, 2.0, 5.0, 22.0],
         11: [24.0, 6.0, 3.0, 1.8, 0.7, 0.5, 0.5, 0.7, 1.8, 3.0, 6.0, 24.0],
         12: [33.0, 11.0, 4.0, 2.0, 1.1, 0.6, 0.3, 0.6, 1.1, 2.0, 4.0, 11.0, 33.0],
@@ -53,8 +53,8 @@ const ODDS_TABLE = {
         16: [110.0, 41.0, 10.0, 5.0, 3.0, 1.5, 1.0, 0.5, 0.3, 0.5, 1.0, 1.5, 3.0, 5.0, 10.0, 41.0, 110.0],
     },
     high: {
-        8:  [29.0, 4.0, 1.5, 0.3, 0.2, 0.3, 1.5, 4.0, 29.0],
-        9:  [43.0, 7.0, 2.0, 0.6, 0.2, 0.2, 0.6, 2.0, 7.0, 43.0],
+        8: [29.0, 4.0, 1.5, 0.3, 0.2, 0.3, 1.5, 4.0, 29.0],
+        9: [43.0, 7.0, 2.0, 0.6, 0.2, 0.2, 0.6, 2.0, 7.0, 43.0],
         10: [76.0, 10.0, 3.0, 0.9, 0.3, 0.2, 0.3, 0.9, 3.0, 10.0, 76.0],
         11: [120.0, 14.0, 5.3, 1.4, 0.4, 0.2, 0.2, 0.4, 1.4, 5.3, 14.0, 120.0],
         12: [170.0, 24.0, 8.1, 2.0, 0.7, 0.2, 0.2, 0.2, 0.7, 2.0, 8.1, 24.0, 170.0],
@@ -69,18 +69,28 @@ const ODDS_TABLE = {
 // ゲーム状態
 // ============================================================
 
+// バースト（連打）管理定数
+const BURST_MAX = 10;   // 1バーストあたりの最大ショット数
+const COOLDOWN_SEC = 3;    // バースト後のクールダウン秒数
+
 const state = {
-    currentRisk:   'low',
-    currentRows:   16,
-    isAnimating:   false,
-    sessionToken:  null,
-    engine:        null,
-    render:        null,
-    runner:        null,
-    activeBall:    null,
-    pegBodies:     [],
-    targetPocket:  null,  // 1-indexed、サーバーから受け取る
+    currentRisk: 'low',
+    currentRows: 16,
+    isAnimating: false,
+    sessionToken: null,
+    engine: null,
+    render: null,
+    runner: null,
+    activeBall: null,
+    pegBodies: [],
+    targetPocket: null,  // 1-indexed、サーバーから受け取る
     guidanceActive: false,
+
+    // バースト管理
+    burstCount: 0,     // 現在のバースト内で消費したショット数
+    pendingBets: 0,     // 飛行中（決済待ち）のボール数
+    isCooldown: false, // クールダウン中フラグ
+    cooldownTimer: null,  // setIntervalハンドラ
 };
 
 // Matter.jsモジュール展開
@@ -90,24 +100,24 @@ const { Engine, Render, Runner, Bodies, Body, World, Events, Vector, Composite }
 // キャンバス・物理エンジン初期化
 // ============================================================
 
-let canvasWidth  = 0;
+let canvasWidth = 0;
 let canvasHeight = 0;
-let pegRadius    = 0;
-let ballRadius   = 0;
-let pegSpacingX  = 0;
-let pegSpacingY  = 0;
-let topMargin    = 0;
+let pegRadius = 0;
+let ballRadius = 0;
+let pegSpacingX = 0;
+let pegSpacingY = 0;
+let topMargin = 0;
 let pegPositions = [];  // { x, y, row, col } の配列
 
 function initPhysics() {
     const gameArea = document.querySelector('.game-area');
-    const maxW = gameArea.clientWidth  - 24;
+    const maxW = gameArea.clientWidth - 24;
     const maxH = gameArea.clientHeight - 50;
-    canvasWidth  = Math.min(maxW, 680);
+    canvasWidth = Math.min(maxW, 680);
     canvasHeight = Math.min(maxH, 540);
 
     const canvas = document.getElementById('plinkoCanvas');
-    canvas.width  = canvasWidth;
+    canvas.width = canvasWidth;
     canvas.height = canvasHeight;
 
     // 既存エンジンを破棄
@@ -123,11 +133,11 @@ function initPhysics() {
         canvas,
         engine: state.engine,
         options: {
-            width:             canvasWidth,
-            height:            canvasHeight,
-            wireframes:        false,
-            background:        COLORS.bgCanvas,
-            pixelRatio:        window.devicePixelRatio || 1,
+            width: canvasWidth,
+            height: canvasHeight,
+            wireframes: false,
+            background: COLORS.bgCanvas,
+            pixelRatio: window.devicePixelRatio || 1,
         },
     });
 
@@ -157,22 +167,22 @@ function buildBoard() {
     const totalPockets = rows + 1;
 
     // レイアウト計算
-    topMargin   = canvasHeight * 0.06;
+    topMargin = canvasHeight * 0.06;
     const usableH = canvasHeight * 0.76;
     pegSpacingY = usableH / rows;
     pegSpacingX = (canvasWidth * 0.86) / rows;
-    const pegArea  = Math.min(pegSpacingX, pegSpacingY);
-    pegRadius   = Math.max(4, pegArea * 0.18);
-    ballRadius  = Math.max(6, pegArea * 0.24);
+    const pegArea = Math.min(pegSpacingX, pegSpacingY);
+    pegRadius = Math.max(4, pegArea * 0.18);
+    ballRadius = Math.max(6, pegArea * 0.24);
 
     // 左右の壁
     const wallOpts = { isStatic: true, render: { fillStyle: 'transparent' }, label: 'wall' };
     const wT = 10;
-    const leftX  = (canvasWidth - pegSpacingX * rows) / 2 - wT / 2;
+    const leftX = (canvasWidth - pegSpacingX * rows) / 2 - wT / 2;
     const rightX = (canvasWidth + pegSpacingX * rows) / 2 + wT / 2;
 
     World.add(state.engine.world, [
-        Bodies.rectangle(leftX,  canvasHeight / 2, wT, canvasHeight, wallOpts),
+        Bodies.rectangle(leftX, canvasHeight / 2, wT, canvasHeight, wallOpts),
         Bodies.rectangle(rightX, canvasHeight / 2, wT, canvasHeight, wallOpts),
         Bodies.rectangle(canvasWidth / 2, canvasHeight + 5, canvasWidth, 10, {
             isStatic: true, render: { fillStyle: '#1a2535' }, label: 'floor'
@@ -190,9 +200,9 @@ function buildBoard() {
 
     for (let row = 0; row < rows; row++) {
         const pegsInRow = row + 2;
-        const rowWidth  = pegSpacingX * (pegsInRow - 1);
-        const startX    = (canvasWidth - rowWidth) / 2;
-        const y         = topMargin + pegSpacingY * row + pegSpacingY * 0.5;
+        const rowWidth = pegSpacingX * (pegsInRow - 1);
+        const startX = (canvasWidth - rowWidth) / 2;
+        const y = topMargin + pegSpacingY * row + pegSpacingY * 0.5;
 
         for (let col = 0; col < pegsInRow; col++) {
             const x = startX + col * pegSpacingX;
@@ -205,11 +215,11 @@ function buildBoard() {
 
     // ポケット仕切り（静的ボディ）
     const pocketHeight = canvasHeight * 0.12;
-    const pocketY      = canvasHeight - pocketHeight / 2;
-    const pocketAreaW  = pegSpacingX * rows;
+    const pocketY = canvasHeight - pocketHeight / 2;
+    const pocketAreaW = pegSpacingX * rows;
     const pocketStartX = (canvasWidth - pocketAreaW) / 2;
-    const pocketW      = pocketAreaW / totalPockets;
-    const dividerW     = 3;
+    const pocketW = pocketAreaW / totalPockets;
+    const dividerW = 3;
 
     for (let i = 0; i <= totalPockets; i++) {
         const divX = pocketStartX + i * pocketW;
@@ -227,18 +237,18 @@ function buildBoard() {
 // ============================================================
 
 function getPocketTier(mult) {
-    if (mult >= 50)  return 'tier-jackpot';
-    if (mult >= 10)  return 'tier-high';
-    if (mult >= 2)   return 'tier-medium';
-    if (mult >= 1)   return 'tier-low';
+    if (mult >= 50) return 'tier-jackpot';
+    if (mult >= 10) return 'tier-high';
+    if (mult >= 2) return 'tier-medium';
+    if (mult >= 1) return 'tier-low';
     return 'tier-loss';
 }
 
 function getPocketColor(mult) {
-    if (mult >= 50)  return COLORS.tierJackpot;
-    if (mult >= 10)  return COLORS.tierHigh;
-    if (mult >= 2)   return COLORS.tierMedium;
-    if (mult >= 1)   return COLORS.tierLow;
+    if (mult >= 50) return COLORS.tierJackpot;
+    if (mult >= 10) return COLORS.tierHigh;
+    if (mult >= 2) return COLORS.tierMedium;
+    if (mult >= 1) return COLORS.tierLow;
     return COLORS.tierLoss;
 }
 
@@ -249,16 +259,16 @@ function buildPocketLabels(totalPockets, pocketW) {
     if (!odds) return;
 
     // キャンバス幅に合わせてラベルコンテナ幅を設定
-    const pocketAreaW  = pegSpacingX * state.currentRows;
+    const pocketAreaW = pegSpacingX * state.currentRows;
     const pocketStartX = (canvasWidth - pocketAreaW) / 2;
-    container.style.width      = canvasWidth + 'px';
-    container.style.paddingLeft  = pocketStartX + 'px';
+    container.style.width = canvasWidth + 'px';
+    container.style.paddingLeft = pocketStartX + 'px';
     container.style.paddingRight = pocketStartX + 'px';
 
     odds.forEach((mult, i) => {
         const label = document.createElement('div');
         label.className = `pocket-label ${getPocketTier(mult)}`;
-        label.id        = `pocket-${i}`;
+        label.id = `pocket-${i}`;
         label.textContent = mult >= 10 ? Math.round(mult) + 'x' : mult + 'x';
         label.style.maxWidth = pocketW + 'px';
         container.appendChild(label);
@@ -273,15 +283,15 @@ function buildPocketLabels(totalPockets, pocketW) {
 function onAfterUpdate() {
     if (!state.activeBall || !state.guidanceActive) return;
 
-    const ball   = state.activeBall;
-    const pos    = ball.position;
-    const vel    = ball.velocity;
-    const rows   = state.currentRows;
+    const ball = state.activeBall;
+    const pos = ball.position;
+    const vel = ball.velocity;
+    const rows = state.currentRows;
 
     // 最終ポケットのX座標を計算（1-indexed → 0-indexed）
-    const targetIdx   = state.targetPocket - 1;
+    const targetIdx = state.targetPocket - 1;
     const totalPockets = rows + 1;
-    const pocketAreaW  = pegSpacingX * rows;
+    const pocketAreaW = pegSpacingX * rows;
     const pocketStartX = (canvasWidth - pocketAreaW) / 2;
     const pocketCenterX = pocketStartX + (targetIdx + 0.5) * (pocketAreaW / totalPockets);
 
@@ -317,12 +327,10 @@ function onAfterUpdate() {
 // ============================================================
 
 function dropBall(targetPocket) {
-    if (state.activeBall) {
-        World.remove(state.engine.world, state.activeBall);
-        state.activeBall = null;
-    }
+    // 前のボールはワールドに残したまま追加投下（多ボール対応）
+    // activeBallは最後に投下したボールを保持（誘導・着地検知に使用）
 
-    state.targetPocket  = targetPocket;
+    state.targetPocket = targetPocket;
     state.guidanceActive = false;
 
     // 投下X位置にわずかなランダム揺らぎをつけて自然に見せる
@@ -331,9 +339,9 @@ function dropBall(targetPocket) {
 
     const ball = Bodies.circle(startX, startY, ballRadius, {
         restitution: 0.4,
-        friction:    0.05,
+        friction: 0.05,
         frictionAir: 0.012,
-        density:     0.003,
+        density: 0.003,
         render: {
             fillStyle: COLORS.ball,
             strokeStyle: COLORS.ballGlow,
@@ -351,23 +359,21 @@ function dropBall(targetPocket) {
     }, 400);
 
     // ボールの到達を検知（定期チェック）
-    const floorY  = canvasHeight - canvasHeight * 0.12 + ballRadius;
+    const floorY = canvasHeight - canvasHeight * 0.12 + ballRadius;
     const checkInterval = setInterval(() => {
-        if (!state.activeBall) {
+        if (ball.position.y >= floorY) {
             clearInterval(checkInterval);
-            return;
-        }
-        if (state.activeBall.position.y >= floorY) {
-            clearInterval(checkInterval);
-            onBallLanded();
+            World.remove(state.engine.world, ball);
+            onBallLanded(targetPocket);
         }
     }, 50);
 
     // フェイルセーフ: 8秒経っても着地しなければ強制終了
     setTimeout(() => {
         clearInterval(checkInterval);
-        if (state.isAnimating) {
-            onBallLanded();
+        if (state.pendingBets > 0) {
+            World.remove(state.engine.world, ball);
+            onBallLanded(targetPocket);
         }
     }, 8000);
 }
@@ -376,11 +382,11 @@ function dropBall(targetPocket) {
 // ボール着地処理
 // ============================================================
 
-function onBallLanded() {
-    if (!state.isAnimating) return;
+function onBallLanded(targetPocket) {
+    state.pendingBets = Math.max(0, state.pendingBets - 1);
 
     // ポケットラベルをハイライト
-    const pocketEl = document.getElementById(`pocket-${state.targetPocket - 1}`);
+    const pocketEl = document.getElementById(`pocket-${targetPocket - 1}`);
     if (pocketEl) {
         pocketEl.classList.add('hit');
         setTimeout(() => pocketEl.classList.remove('hit'), 1200);
@@ -391,7 +397,15 @@ function onBallLanded() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ token: state.sessionToken }),
-    }).catch(() => {});
+    }).catch(() => { });
+
+    // 全ボールが着地したらアニメーション終了
+    if (state.pendingBets <= 0) {
+        state.isAnimating = false;
+        if (state.activeBall) {
+            state.activeBall = null;
+        }
+    }
 }
 
 // ============================================================
@@ -405,7 +419,7 @@ function initControls() {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({}),
-        }).catch(() => {});
+        }).catch(() => { });
         hideUI();
     });
 
@@ -421,8 +435,8 @@ function initControls() {
     });
 
     // 列数スライダー
-    const slider   = document.getElementById('rowsSlider');
-    const rowsVal  = document.getElementById('rowsValue');
+    const slider = document.getElementById('rowsSlider');
+    const rowsVal = document.getElementById('rowsValue');
     slider.addEventListener('input', () => {
         if (state.isAnimating) return;
         state.currentRows = parseInt(slider.value);
@@ -454,10 +468,41 @@ function initControls() {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({}),
-            }).catch(() => {});
+            }).catch(() => { });
             hideUI();
         }
     });
+}
+
+// ============================================================
+// クールダウン処理
+// ============================================================
+
+function startCooldown() {
+    state.isCooldown = true;
+    state.burstCount = 0;
+    let remaining = COOLDOWN_SEC;
+
+    // ベットボタンをクールダウン表示に変更
+    const btn = document.getElementById('betBtn');
+    btn.disabled = true;
+    btn.textContent = `クールダウン ${remaining}s`;
+
+    state.cooldownTimer = setInterval(() => {
+        remaining--;
+        if (remaining <= 0) {
+            clearInterval(state.cooldownTimer);
+            state.cooldownTimer = null;
+            state.isCooldown = false;
+            btn.textContent = 'ベット';
+            // isAnimatingでなければUIを解放
+            if (!state.isAnimating) {
+                setUIBusy(false);
+            }
+        } else {
+            btn.textContent = `クールダウン ${remaining}s`;
+        }
+    }, 1000);
 }
 
 // ============================================================
@@ -465,7 +510,8 @@ function initControls() {
 // ============================================================
 
 function placeBet() {
-    if (state.isAnimating) return;
+    // クールダウン中は不可
+    if (state.isCooldown) return;
 
     const betVal = parseFloat(document.getElementById('betAmount').value);
     if (!betVal || betVal <= 0) {
@@ -475,17 +521,29 @@ function placeBet() {
 
     hideError();
     hideResult();
-    setUIBusy(true);
+
+    // バーストカウンターをインクリメント
+    state.burstCount++;
+    state.pendingBets++;
+    state.isAnimating = true;
+
+    // BURST_MAX に達したらベットボタンをロック（クールダウン待ち）
+    if (state.burstCount >= BURST_MAX) {
+        startCooldown();
+    } else {
+        // まだバースト枠が残っている場合はボタンを有効のまま
+        // （isAnimatingは複数ボール飛行中でもベット可能にするため使わない）
+    }
 
     fetch('https://plinko/placeBet', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-            bet:  betVal,
+            bet: betVal,
             rows: state.currentRows,
             risk: state.currentRisk,
         }),
-    }).catch(() => {});
+    }).catch(() => { });
 }
 
 // ============================================================
@@ -512,38 +570,39 @@ window.addEventListener('message', (event) => {
         case 'betRejected':
             setUIBusy(false);
             const reasonMap = {
-                rate_limit:         'あとでもう少し待ってください',
-                session_active:     '進行中のゲームがあります',
-                invalid_bet:        '無効なベット金額です',
-                bet_too_low:        'ベット金額が少なすぎます',
-                bet_too_high:       'ベット金額が多すぎます',
+                rate_limit: 'あとでもう少し待ってください',
+                session_active: '進行中のゲームがあります',
+                invalid_bet: '無効なベット金額です',
+                bet_too_low: 'ベット金額が少なすぎます',
+                bet_too_high: 'ベット金額が多すぎます',
                 insufficient_funds: '残高が不足しています',
-                invalid_rows:       '無効な列数です',
-                invalid_risk:       '無効なリスクレベルです',
+                invalid_rows: '無効な列数です',
+                invalid_risk: '無効なリスクレベルです',
             };
             showError(reasonMap[data.reason] || 'エラーが発生しました');
             break;
 
         // アニメーション開始（サーバーからの決定通知）
         case 'startAnimation':
-            state.isAnimating   = true;
-            state.sessionToken  = data.token;
+            state.sessionToken = data.token;
             dropBall(data.targetPocket);
             break;
 
         // 配当結果
         case 'payoutResult':
-            state.isAnimating = false;
-            setUIBusy(false);
+            // クールダウン中でなく全ボール着地済みならUIを解放
+            if (!state.isCooldown && state.pendingBets <= 0) {
+                setUIBusy(false);
+            }
             if (data.success) {
                 showResult(data.multiplier, data.payout);
             } else {
                 const errMap = {
-                    no_session:    'セッションが見つかりません',
-                    token_mismatch:'認証エラー',
-                    already_paid:  '既に配当済みです',
-                    too_fast:      'アニメーションが完了していません',
-                    player_offline:'プレイヤーがオフラインです',
+                    no_session: 'セッションが見つかりません',
+                    token_mismatch: '認証エラー',
+                    already_paid: '既に配当済みです',
+                    too_fast: 'アニメーションが完了していません',
+                    player_offline: 'プレイヤーがオフラインです',
                 };
                 showError(errMap[data.reason] || 'エラーが発生しました');
             }
@@ -565,8 +624,18 @@ function showUI(data) {
 
 function hideUI() {
     document.getElementById('app').classList.add('hidden');
-    state.isAnimating  = false;
+    state.isAnimating = false;
     state.sessionToken = null;
+    state.burstCount = 0;
+    state.pendingBets = 0;
+    state.isCooldown = false;
+    if (state.cooldownTimer) {
+        clearInterval(state.cooldownTimer);
+        state.cooldownTimer = null;
+    }
+    // ベットボタンのテキストをリセット
+    const btn = document.getElementById('betBtn');
+    if (btn) btn.textContent = 'ベット';
     if (state.activeBall) {
         World.remove(state.engine.world, state.activeBall);
         state.activeBall = null;
@@ -574,8 +643,10 @@ function hideUI() {
 }
 
 function setUIBusy(busy) {
-    document.getElementById('betBtn').disabled                    = busy;
-    document.getElementById('rowsSlider').disabled                = busy;
+    const btn = document.getElementById('betBtn');
+    // クールダウン中はbusyがfalseでもボタンは解放しない
+    btn.disabled = busy || state.isCooldown;
+    document.getElementById('rowsSlider').disabled = busy;
     document.querySelectorAll('.risk-btn').forEach(b => b.disabled = busy);
     document.querySelectorAll('.quick-btn').forEach(b => b.disabled = busy);
 }
@@ -583,7 +654,7 @@ function setUIBusy(busy) {
 function showResult(multiplier, payout) {
     const panel = document.getElementById('resultPanel');
     document.getElementById('resultMultiplier').textContent = `x${multiplier}`;
-    document.getElementById('resultAmount').textContent     =
+    document.getElementById('resultAmount').textContent =
         payout > 0 ? `+$${payout.toLocaleString()}` : `$0`;
     panel.classList.remove('hidden');
 }
